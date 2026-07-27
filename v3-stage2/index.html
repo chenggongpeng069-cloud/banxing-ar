@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#15110e">
+<title>版醒｜木版年画 AR 显影书 V3 Stage 2</title>
+<link rel="stylesheet" href="./styles.css">
+<script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
+</head>
+<body>
+<div id="hud">
+  <div class="brand">版醒 <small>AR POP-UP BOOK · V3</small></div>
+  <div id="status">加载场景…</div>
+</div>
+
+<div id="intro">
+  <div class="intro-card">
+    <div class="seal">版醒</div>
+    <h1>四张卡 · 四个微缩世界</h1>
+    <p>扫描“版 / 印 / 画 / 生”，让木版工坊、墨色剧场、年画戏台与当代街区从纸面展开。</p>
+    <button id="start" disabled>正在加载模型…</button>
+  </div>
+</div>
+
+<div id="scanner" class="hidden">
+  <div class="scan-frame"></div>
+  <div class="scan-tip">将识别卡完整放入框内</div>
+</div>
+
+<div id="chapterbar" class="hidden">
+  <div class="chapter-copy">
+    <small id="chapter-kicker">AR CHAPTER</small>
+    <b id="chapter-title">版 · 木版工坊</b>
+  </div>
+  <div class="chapter-actions">
+    <button id="replay">重播</button>
+    <button id="interact">互动</button>
+  </div>
+</div>
+
+<div id="calibration" class="hidden"></div>
+
+<a-scene id="scene"
+  mindar-image="imageTargetSrc: ./tracking/targets.mind; maxTrack: 1; autoStart: false; uiLoading: no; uiScanning: no; uiError: no;"
+  color-space="sRGB"
+  renderer="colorManagement: true; physicallyCorrectLights: true; alpha: true; antialias: true"
+  vr-mode-ui="enabled:false"
+  device-orientation-permission-ui="enabled:false"
+  embedded>
+  <a-assets id="assets" timeout="20000">
+    <a-asset-item id="banStatic" src="./assets/models/ban_workshop_static.glb"></a-asset-item>
+    <a-asset-item id="banHero" src="./assets/models/ban_hero_block.glb"></a-asset-item>
+    <a-asset-item id="yinStatic" src="./assets/models/yin_print_theater_static.glb"></a-asset-item>
+    <a-asset-item id="yinRoller" src="./assets/models/yin_roller.glb"></a-asset-item>
+    <a-asset-item id="yinPrint" src="./assets/models/yin_print_relief.glb"></a-asset-item>
+    <a-asset-item id="huaStatic" src="./assets/models/hua_stage_static.glb"></a-asset-item>
+    <a-asset-item id="huaFigure" src="./assets/models/hua_figure.glb"></a-asset-item>
+    <a-asset-item id="huaRed" src="./assets/models/hua_wing_red.glb"></a-asset-item>
+    <a-asset-item id="huaGold" src="./assets/models/hua_wing_gold.glb"></a-asset-item>
+    <a-asset-item id="huaBlue" src="./assets/models/hua_wing_blue.glb"></a-asset-item>
+    <a-asset-item id="huaInk" src="./assets/models/hua_wing_ink.glb"></a-asset-item>
+    <a-asset-item id="shengStatic" src="./assets/models/sheng_street_static.glb"></a-asset-item>
+    <a-asset-item id="shengSign0" src="./assets/models/sheng_sign_0.glb"></a-asset-item>
+    <a-asset-item id="shengSign1" src="./assets/models/sheng_sign_1.glb"></a-asset-item>
+    <a-asset-item id="shengSign2" src="./assets/models/sheng_sign_2.glb"></a-asset-item>
+  </a-assets>
+
+  <a-camera position="0 0 0" look-controls="enabled:false"></a-camera>
+  <a-light type="ambient" color="#fff0d8" intensity="1.05"></a-light>
+  <a-light type="directional" color="#ffd68b" intensity="1.25" position="-1.4 2.1 3"></a-light>
+
+  <a-entity id="target0" mindar-image-target="targetIndex:0">
+    <a-entity id="root0" class="scene-root" position="0 0 0.035" scale="0.01 0.01 0.01">
+      <a-gltf-model src="#banStatic" scale="0.92 0.92 0.92"></a-gltf-model>
+      <a-entity id="banHeroWrap" position="0 -0.04 0.10">
+        <a-gltf-model src="#banHero" scale="0.92 0.92 0.92"></a-gltf-model>
+      </a-entity>
+      <a-torus id="banGlow" color="#d7a652" opacity="0.75" radius="0.23" radius-tubular="0.008"
+        position="0 -0.04 0.23" rotation="0 0 0"></a-torus>
+    </a-entity>
+  </a-entity>
+
+  <a-entity id="target1" mindar-image-target="targetIndex:1">
+    <a-entity id="root1" class="scene-root" position="0 0 0.035" scale="0.01 0.01 0.01">
+      <a-gltf-model src="#yinStatic" scale="0.92 0.92 0.92"></a-gltf-model>
+      <a-entity id="rollerWrap" position="-0.27 -0.06 0.25">
+        <a-gltf-model src="#yinRoller" scale="0.92 0.92 0.92"></a-gltf-model>
+      </a-entity>
+      <a-entity id="printWrap" position="0 -0.05 0.175" scale="0.01 0.01 0.01">
+        <a-gltf-model src="#yinPrint" scale="0.92 0.92 0.92"></a-gltf-model>
+      </a-entity>
+    </a-entity>
+  </a-entity>
+
+  <a-entity id="target2" mindar-image-target="targetIndex:2">
+    <a-entity id="root2" class="scene-root" position="0 0 0.035" scale="0.01 0.01 0.01">
+      <a-gltf-model src="#huaStatic" scale="0.92 0.92 0.92"></a-gltf-model>
+      <a-entity id="huaFigureWrap" position="0 -0.08 0.10">
+        <a-gltf-model src="#huaFigure" scale="0.92 0.92 0.92"></a-gltf-model>
+      </a-entity>
+      <a-entity id="wingR" position="-0.14 -0.02 0.16"><a-gltf-model src="#huaRed"></a-gltf-model></a-entity>
+      <a-entity id="wingG" position="-0.05 0.00 0.19"><a-gltf-model src="#huaGold"></a-gltf-model></a-entity>
+      <a-entity id="wingB" position="0.05 0.00 0.22"><a-gltf-model src="#huaBlue"></a-gltf-model></a-entity>
+      <a-entity id="wingI" position="0.14 -0.02 0.25"><a-gltf-model src="#huaInk"></a-gltf-model></a-entity>
+    </a-entity>
+  </a-entity>
+
+  <a-entity id="target3" mindar-image-target="targetIndex:3">
+    <a-entity id="root3" class="scene-root" position="0 0 0.035" scale="0.01 0.01 0.01">
+      <a-gltf-model src="#shengStatic" scale="0.92 0.92 0.92"></a-gltf-model>
+      <a-entity id="sign0" position="-0.26 0.08 0.43"><a-gltf-model src="#shengSign0"></a-gltf-model></a-entity>
+      <a-entity id="sign1" position="0.26 0.08 0.40"><a-gltf-model src="#shengSign1"></a-gltf-model></a-entity>
+      <a-entity id="sign2" position="0 0.23 0.54"><a-gltf-model src="#shengSign2"></a-gltf-model></a-entity>
+    </a-entity>
+  </a-entity>
+</a-scene>
+<script src="./app.js"></script>
+</body>
+</html>
