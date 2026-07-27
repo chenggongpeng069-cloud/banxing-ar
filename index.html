@@ -1,0 +1,237 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#15120f">
+  <title>版醒｜木版年画AR显影书</title>
+
+  <link rel="stylesheet" href="./styles.css">
+
+  <!-- 采用 MindAR 官方当前 Quick Start 的 A-Frame 方式 -->
+  <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
+</head>
+<body>
+  <div id="topbar">
+    <div class="brand">版醒 <small>BANXING · WEBAR</small></div>
+    <div id="progress">
+      <span data-i="0">版</span>
+      <span data-i="1">印</span>
+      <span data-i="2">画</span>
+      <span data-i="3">生</span>
+    </div>
+  </div>
+
+  <div id="intro" class="screen">
+    <div class="intro-card">
+      <div class="seal">版醒</div>
+      <h1>一版 · 一印 · 一画 · 一生</h1>
+      <p>开启摄像头后，可任意扫描四张识别卡。移开当前卡片后，可直接扫描下一张，无需刷新页面。</p>
+      <button id="enter" disabled>正在准备 AR…</button>
+      <small>正式访问需使用 HTTPS；本机测试可使用 localhost。</small>
+    </div>
+  </div>
+
+  <div id="scanner" class="scanner hidden">
+    <div class="frame"></div>
+    <div class="scan-text">
+      <b>寻找识别卡</b>
+      <span>版 / 印 / 画 / 生</span>
+    </div>
+  </div>
+
+  <div id="error-screen" class="error-screen hidden">
+    <div class="error-card">
+      <h2>AR 启动失败</h2>
+      <p id="error-copy">请确认浏览器已允许摄像头权限，并通过 HTTPS 或 localhost 访问。</p>
+      <button id="retry">重新启动</button>
+    </div>
+  </div>
+
+  <div id="story" class="story hidden">
+    <div id="chapter" class="chapter"></div>
+    <h2 id="story-title"></h2>
+    <p id="story-copy"></p>
+    <div class="btns">
+      <button id="replay">重播动效</button>
+      <button id="more">内容说明</button>
+    </div>
+  </div>
+
+  <div id="modal" class="modal hidden">
+    <div class="modal-card">
+      <button id="close">×</button>
+      <div id="modal-kicker"></div>
+      <h2 id="modal-title"></h2>
+      <p id="modal-copy"></p>
+    </div>
+  </div>
+
+  <a-scene
+    id="ar-scene"
+    mindar-image="
+      imageTargetSrc: ./tracking/targets.mind;
+      maxTrack: 1;
+      autoStart: false;
+      uiLoading: no;
+      uiScanning: no;
+      uiError: no;
+    "
+    color-space="sRGB"
+    renderer="colorManagement: true; physicallyCorrectLights: true; alpha: true"
+    vr-mode-ui="enabled: false"
+    device-orientation-permission-ui="enabled: false"
+    embedded>
+
+    <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
+
+    <!-- 0 = 版 -->
+    <a-entity id="t0" mindar-image-target="targetIndex: 0">
+      <a-box id="ban-block"
+        width="0.78" height="1.17" depth="0.065"
+        color="#3b2519" position="0 0 0.08"
+        animation__float="
+          property: position;
+          from: 0 0 0.06;
+          to: 0 0.03 0.17;
+          dur: 1100;
+          easing: easeOutCubic;
+          startEvents: replay0">
+      </a-box>
+
+      <a-plane
+        color="#d2a354" opacity="0.26"
+        width="0.68" height="1.02" position="0 0 0.125"
+        animation__pulse="
+          property: opacity;
+          from: 0.15;
+          to: 0.48;
+          dur: 1200;
+          dir: alternate;
+          loop: true">
+      </a-plane>
+
+      <a-ring
+        color="#e0b45c"
+        radius-inner="0.22" radius-outer="0.235"
+        position="0 0 0.19"
+        animation="
+          property: rotation;
+          to: 0 0 360;
+          dur: 8000;
+          loop: true;
+          easing: linear">
+      </a-ring>
+    </a-entity>
+
+    <!-- 1 = 印 -->
+    <a-entity id="t1" mindar-image-target="targetIndex: 1">
+      <a-plane color="#efe4d2" width="0.75" height="1.10" position="0 0 0.05"></a-plane>
+
+      <a-plane id="ink-sheet"
+        color="#a62e21" opacity="0.58"
+        width="0.64" height="0.82" position="0 -0.05 0.08"
+        animation__ink="
+          property: scale;
+          from: 1 0.01 1;
+          to: 1 1 1;
+          dur: 1600;
+          easing: easeOutCubic;
+          startEvents: replay1">
+      </a-plane>
+
+      <a-box id="roller"
+        width="0.65" height="0.12" depth="0.10"
+        color="#151515" position="-0.55 0.30 0.14"
+        animation__roll="
+          property: position;
+          from: -0.55 0.30 0.14;
+          to: 0.55 0.30 0.14;
+          dur: 1600;
+          easing: easeInOutCubic;
+          startEvents: replay1">
+      </a-box>
+    </a-entity>
+
+    <!-- 2 = 画 -->
+    <a-entity id="t2" mindar-image-target="targetIndex: 2">
+      <a-plane id="c0" color="#171717" opacity="0.36"
+        width="0.70" height="1.02" position="0 0 0.07"
+        animation__s="property: position; to: -0.14 0.18 0.16; dur: 800; startEvents: replay2">
+      </a-plane>
+
+      <a-plane id="c1" color="#b53528" opacity="0.38"
+        width="0.70" height="1.02" position="0 0 0.08"
+        animation__s="property: position; to: -0.05 0.06 0.24; dur: 950; startEvents: replay2">
+      </a-plane>
+
+      <a-plane id="c2" color="#d1a13a" opacity="0.34"
+        width="0.70" height="1.02" position="0 0 0.09"
+        animation__s="property: position; to: 0.05 -0.06 0.32; dur: 1100; startEvents: replay2">
+      </a-plane>
+
+      <a-plane id="c3" color="#214f77" opacity="0.36"
+        width="0.70" height="1.02" position="0 0 0.10"
+        animation__s="property: position; to: 0.14 -0.18 0.40; dur: 1250; startEvents: replay2">
+      </a-plane>
+    </a-entity>
+
+    <!-- 3 = 生 -->
+    <a-entity id="t3" mindar-image-target="targetIndex: 3">
+      <a-box width="0.82" height="0.07" depth="0.46"
+        color="#33271f" position="0 -0.32 0.12"></a-box>
+
+      <a-plane
+        color="#f1e5d2" width="0.22" height="0.31"
+        position="-0.26 -0.04 0.19"
+        animation="
+          property: position;
+          from: -0.26 -0.18 0.19;
+          to: -0.26 -0.04 0.19;
+          dur: 1050;
+          dir: alternate;
+          loop: true">
+      </a-plane>
+
+      <a-plane
+        color="#b3372a" width="0.22" height="0.31"
+        position="0 0.02 0.23"
+        animation="
+          property: position;
+          from: 0 -0.18 0.23;
+          to: 0 0.02 0.23;
+          dur: 1250;
+          dir: alternate;
+          loop: true">
+      </a-plane>
+
+      <a-plane
+        color="#244f70" width="0.22" height="0.31"
+        position="0.26 -0.04 0.19"
+        animation="
+          property: position;
+          from: 0.26 -0.18 0.19;
+          to: 0.26 -0.04 0.19;
+          dur: 1450;
+          dir: alternate;
+          loop: true">
+      </a-plane>
+
+      <a-torus
+        color="#d3a44f"
+        radius="0.30" radius-tubular="0.013"
+        position="0 0.28 0.17"
+        animation="
+          property: rotation;
+          to: 0 0 360;
+          dur: 9000;
+          loop: true;
+          easing: linear">
+      </a-torus>
+    </a-entity>
+  </a-scene>
+
+  <script src="./app.js"></script>
+</body>
+</html>

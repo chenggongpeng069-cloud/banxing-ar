@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>版醒｜4目标编译器</title>
+
+  <!-- MindAR 官方 Compiler API 所需核心构建 -->
+  <script src="https://cdn.jsdelivr.net/gh/hiukim/mind-ar-js@1.2.5/dist/mindar-image.prod.js"></script>
+
+  <style>
+    body{
+      font-family:system-ui,"Microsoft YaHei",sans-serif;
+      max-width:980px;margin:40px auto;padding:0 20px;
+      background:#f4efe5;color:#2b251e;
+    }
+    h1,h2{font-family:serif}
+    .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+    .grid figure{margin:0;background:white;padding:8px;border:1px solid #ccbba5}
+    .grid img{width:100%;display:block}
+    .grid figcaption{text-align:center;padding:8px 0 2px}
+    button{
+      border:0;border-radius:999px;
+      background:#a53527;color:white;
+      padding:13px 22px;font-weight:700;
+    }
+    pre{
+      background:#fffaf1;border:1px solid #ccbba5;
+      padding:15px;white-space:pre-wrap;line-height:1.6
+    }
+    .warn{
+      background:#fffaf1;border-left:5px solid #a53527;
+      padding:15px;line-height:1.7;margin:18px 0;
+    }
+  </style>
+</head>
+<body>
+  <h1>《版醒》4目标 targets.mind 编译器</h1>
+
+  <div class="warn">
+    固定顺序：0 版 → 1 印 → 2 画 → 3 生。<br>
+    编译完成后得到的 <code>targets.mind</code> 必须放入 <code>tracking/targets.mind</code>。<br>
+    如果之后修改任意识别图，必须重新编译。
+  </div>
+
+  <div id="cards" class="grid"></div>
+
+  <p><button id="compile" disabled>正在加载识别图…</button></p>
+  <pre id="status">等待识别图加载。</pre>
+
+  <script>
+    const sourceList = [
+      ["版", "./assets/targets/00_BAN_TARGET.png"],
+      ["印", "./assets/targets/01_YIN_TARGET.png"],
+      ["画", "./assets/targets/02_HUA_TARGET.png"],
+      ["生", "./assets/targets/03_SHENG_TARGET.png"]
+    ];
+
+    const status = document.querySelector("#status");
+    const compileButton = document.querySelector("#compile");
+    const cards = document.querySelector("#cards");
+
+    function loadImage(src) {
+      return new Promise((resolve, reject) => {
+        const image = new Image();
+
+        image.onload = () => resolve(image);
+        image.onerror = () => reject(new Error(`无法加载识别图：${src}`));
+
+        image.src = src;
+      });
+    }
+
+    let images = [];
+
+    Promise.all(sourceList.map(async ([name, src], index) => {
+      const image = await loadImage(src);
+
+      const figure = document.createElement("figure");
+      const preview = image.cloneNode();
+      const caption = document.createElement("figcaption");
+
+      caption.textContent = `${index}｜${name}`;
+
+      figure.appendChild(preview);
+      figure.appendChild(caption);
+      cards.appendChild(figure);
+
+      return image;
+    }))
+    .then((loadedImages) => {
+      images = loadedImages;
+
+      status.textContent = `已按固定顺序加载 ${images.length} 张识别图。`;
+      compileButton.disabled = false;
+      compileButton.textContent = "开始编译 targets.mind";
+    })
+    .catch((error) => {
+      status.textContent = error.stack || String(error);
+    });
+
+    compileButton.addEventListener("click", async () => {
+      compileButton.disabled = true;
+
+      try {
+        if (!window.MINDAR || !window.MINDAR.Compiler) {
+          throw new Error("MindAR Compiler 未成功加载。请检查网络连接。");
+        }
+
+        status.textContent = "开始编译…";
+
+        const compiler = new window.MINDAR.Compiler();
+
+        await compiler.compileImageTargets(images, (progress) => {
+          status.textContent = `编译进度：${Math.round(progress)}%`;
+        });
+
+        const exportedBuffer = await compiler.exportData();
+
+        const blob = new Blob(
+          [exportedBuffer],
+          {type: "application/octet-stream"}
+        );
+
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+
+        a.href = url;
+        a.download = "targets.mind";
+
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+
+        URL.revokeObjectURL(url);
+
+        status.textContent =
+          `编译完成。已导出 targets.mind（${exportedBuffer.byteLength} bytes）。\n` +
+          "把文件复制到 tracking/targets.mind 后，即可进入真实 AR 测试。";
+      } catch (error) {
+        status.textContent = error.stack || String(error);
+      } finally {
+        compileButton.disabled = false;
+        compileButton.textContent = "重新编译";
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>版醒｜识别图顺序检查</title>
+<style>
+body{margin:0;background:#15120f;color:#f4efe5;font-family:system-ui,"Microsoft YaHei",sans-serif}
+main{max-width:1200px;margin:auto;padding:36px 20px}
+h1{font-family:serif}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:15px}
+figure{margin:0;border-radius:18px;overflow:hidden;background:#28221c}
+img{display:block;width:100%}
+figcaption{padding:12px;text-align:center}
+@media(max-width:800px){.grid{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+<main>
+  <h1>《版醒》4目标固定顺序</h1>
+  <p>此页面不调用摄像头，仅用于确认识别图源与 targetIndex 对应关系。</p>
+
+  <div class="grid">
+    <figure><img src="./assets/targets/00_BAN_TARGET.png"><figcaption>0｜版</figcaption></figure>
+    <figure><img src="./assets/targets/01_YIN_TARGET.png"><figcaption>1｜印</figcaption></figure>
+    <figure><img src="./assets/targets/02_HUA_TARGET.png"><figcaption>2｜画</figcaption></figure>
+    <figure><img src="./assets/targets/03_SHENG_TARGET.png"><figcaption>3｜生</figcaption></figure>
+  </div>
+</main>
+</body>
+</html>
